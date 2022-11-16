@@ -1,0 +1,284 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Golang Napoli Feedback and Proposal API",
+    "description": "This is the API for the Golang Napoli Feedback and Proposal system",
+    "version": "0.1.0",
+    "contact": {
+      "name": "Golang Napoli",
+      "url": "https://github.com/golangnapoli",
+      "email": "golangnapoli@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local server"
+    },
+    {
+      "url": "https://golangnapoli-feedback.fly.dev/api",
+      "description": "production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "hint",
+      "description": "Operations about hints"
+    }
+  ],
+  "paths": {
+    "/v1/hint": {
+      "get": {
+        "summary": "Get all hints",
+        "description": "Get all hints",
+        "operationId": "getAllHints",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter hints by type",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "proposal",
+                "feedback"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "hint"
+        ],
+        "responses": {
+          "200": {
+            "description": "Hint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HintRead"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new hint",
+        "description": "Create a new hint",
+        "operationId": "createHint",
+        "tags": [
+          "hint"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HintWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Hint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HintRead"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/hint/{id}": {
+      "get": {
+        "summary": "Get a hint by id",
+        "description": "Get a hint by id",
+        "operationId": "getHintById",
+        "tags": [
+          "hint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Hint id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HintRead"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a hint by id",
+        "description": "Update a hint by id",
+        "operationId": "updateHintById",
+        "tags": [
+          "hint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Hint id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HintWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Hint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HintRead"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HintWrite": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "proposal",
+              "feedback"
+            ]
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "type"
+        ]
+      },
+      "HintRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "proposal",
+              "feedback"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reactions": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "hint_url": {
+            "type": "string"
+          },
+          "author": {
+              "$ref": "#/components/schemas/Author"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "type",
+          "created_at",
+          "reactions",
+          "comments",
+          "hint_url",
+          "author"
+        ]
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "author": {
+            "$ref": "#/components/schemas/Author"
+          }
+        },
+        "required": [
+          "body",
+          "author"
+        ]
+      },
+      "Author": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          },
+          "profile_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "avatar_url",
+          "profile_url"
+        ]
+      }
+    }
+  }
+}

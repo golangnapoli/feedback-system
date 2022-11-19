@@ -17,7 +17,7 @@
     },
     {
       "url": "https://golangnapoli-feedback.fly.dev/api",
-      "description": "production server"
+      "description": "Production server"
     }
   ],
   "tags": [

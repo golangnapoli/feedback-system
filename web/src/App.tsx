@@ -5,7 +5,7 @@ import Navigation from './components/Navigation';
 
 function App(): JSX.Element {
 	return (
-		<div className="flex lg:flex-row sm:flex-col flex-col h-screen bg-[url('https://picsum.photos/id/44/1920/1080')]">
+		<div className="flex lg:flex-row sm:flex-col flex-col h-screen bg-[url('https://i.imgur.com/64rUA4h.png')] bg-slate-800">
 			<Titolo/>
 			<Content/>
 			<Navigation/>

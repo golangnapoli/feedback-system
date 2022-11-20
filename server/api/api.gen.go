@@ -53,7 +53,7 @@ type HintRead struct {
 	Comments  []Comment    `json:"comments"`
 	CreatedAt time.Time    `json:"created_at"`
 	HintUrl   string       `json:"hint_url"`
-	Id        int64        `json:"id"`
+	Id        float32      `json:"id"`
 	Reactions float32      `json:"reactions"`
 	Title     string       `json:"title"`
 	Type      HintReadType `json:"type"`
@@ -72,6 +72,16 @@ type HintWrite struct {
 // HintWriteType defines model for HintWrite.Type.
 type HintWriteType string
 
+// LoginRequest defines model for LoginRequest.
+type LoginRequest struct {
+	Code *string `json:"code,omitempty"`
+}
+
+// LoginResponse defines model for LoginResponse.
+type LoginResponse struct {
+	Token *string `json:"token,omitempty"`
+}
+
 // GetAllHintsParams defines parameters for GetAllHints.
 type GetAllHintsParams struct {
 	// Filter hints by type
@@ -87,11 +97,20 @@ type CreateHintJSONBody HintWrite
 // UpdateHintByIdJSONBody defines parameters for UpdateHintById.
 type UpdateHintByIdJSONBody HintWrite
 
+// LoginWithProviderJSONBody defines parameters for LoginWithProvider.
+type LoginWithProviderJSONBody LoginRequest
+
+// LoginWithProviderParamsProvider defines parameters for LoginWithProvider.
+type LoginWithProviderParamsProvider string
+
 // CreateHintJSONRequestBody defines body for CreateHint for application/json ContentType.
 type CreateHintJSONRequestBody CreateHintJSONBody
 
 // UpdateHintByIdJSONRequestBody defines body for UpdateHintById for application/json ContentType.
 type UpdateHintByIdJSONRequestBody UpdateHintByIdJSONBody
+
+// LoginWithProviderJSONRequestBody defines body for LoginWithProvider for application/json ContentType.
+type LoginWithProviderJSONRequestBody LoginWithProviderJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -103,10 +122,13 @@ type ServerInterface interface {
 	CreateHint(ctx echo.Context) error
 	// Get a hint by id
 	// (GET /v1/hint/{id})
-	GetHintById(ctx echo.Context, id string) error
+	GetHintById(ctx echo.Context, id int) error
 	// Update a hint by id
 	// (PUT /v1/hint/{id})
 	UpdateHintById(ctx echo.Context, id string) error
+	// Login with a provider
+	// (POST /v1/login/auth/{provider})
+	LoginWithProvider(ctx echo.Context, provider LoginWithProviderParamsProvider) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -145,7 +167,7 @@ func (w *ServerInterfaceWrapper) CreateHint(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetHintById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
@@ -170,6 +192,22 @@ func (w *ServerInterfaceWrapper) UpdateHintById(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateHintById(ctx, id)
+	return err
+}
+
+// LoginWithProvider converts echo context to params.
+func (w *ServerInterfaceWrapper) LoginWithProvider(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "provider" -------------
+	var provider LoginWithProviderParamsProvider
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "provider", runtime.ParamLocationPath, ctx.Param("provider"), &provider)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter provider: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.LoginWithProvider(ctx, provider)
 	return err
 }
 
@@ -205,26 +243,29 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/v1/hint", wrapper.CreateHint)
 	router.GET(baseURL+"/v1/hint/:id", wrapper.GetHintById)
 	router.PUT(baseURL+"/v1/hint/:id", wrapper.UpdateHintById)
+	router.POST(baseURL+"/v1/login/auth/:provider", wrapper.LoginWithProvider)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"H4sIAAAAAAAC/+RWUY/bNgz+K4K2RzfObS+Fn3Yt0N4BxXYoNvShOBSKxdhqbckn0SmCwP99IG0n9kW+",
+	"DENbHNCnOCJFkd/3ieJB5q5unAWLQWYHGfISasWf1y2WztNX410DHg3wutopVP5T6yv6h/sGZCYDemML",
+	"2SXSqhqihsa7ralgYWOXSA8PrfGgZfaxj5JMz5oHuE/GAG7zGXKkA167ugaLkYyPlfzqYSsz+Ut6qjod",
+	"Sk6HertEbpzeX06RvZIxeCyhG2PxPSj93TJKiL165M4g1OFSzBGk7piv8l7tOZYHhaA/KYZw63xNX1Ir",
+	"hBdomI+z80tjcVEKRk+WbVtvgIvxoHI0zoaoFQ1WcQH1CwcJtq2JAILUBUXS2ALojcq/TGhYYM1oOZ6R",
+	"jBTyjln90yQnIE/qvUj8B28QzplfZPI71x0rOZb6O1cY+x4eWgiRm5Q7DfGbsRQoNM6GCA7ovoD9T6Fo",
+	"ydit68+3qHJODGplKpnJwlXKFlY1rjJ/FLS4yl0tx0Yk37Jd/MkOMpEsVlkiNiFL08Jg2W5oRzoNRAVo",
+	"CLk3DYlAZvLv0gRhgsASxPXdrdg6z9+z8OLNwIdQVou7gScR9gGhPuruUU4Lm67vbmUid+BDn8B6dbVa",
+	"U16uAasaIzP5+2q9uqLGqLBkUNPdVUoKpe8C+GdexVtAoapKkBPJmRhRZLvVvfW6qm4GW6O8qgHBB5l9",
+	"fBzojakQfB9HbPZiuEKGbA8t+P2JgMHUN6D/oeN7EnIvIy7yt/V6lMLQ7VXTVCbnOtLPwdnTQ3apGx47",
+	"NKtsXiLZWI+hrWvl9xH4UBUEDncFeU9vnAsR1F9zYxFKWPjKe8+Q7z1uepPvb9+roVN8s0L7jtTNOwP6",
+	"Frrng3AMqkcod8lR5+nB6O5psXMQUig3/jO9Uwqv9rf6kt7Jrw/BEqcbd1I4r88hnep9ELSxCAW9cc9O",
+	"0XOMzkXdRsD9p9E9UU/g2/v8QIjnPePnvUVxcuL3qKJ3OqVhJj003u2MBs93Kt7L+FkXXw2WQonR/4x5",
+	"9vpgsLw7eTxJ/ugnhsE/IoHJYctCGN+W/l2XiSycKypYfFe+vUZmA9QPlsl85opopWfPnzymqlmidtQN",
+	"K4WEQ7vA7+JMvnM5jTxsn41bWZpWZCtdwOzl+iUNMxEZ6Jbn7lgEHtgmU9qLcWxYbav9SsMupbmIiB1S",
+	"fhz+r1GkQaiNa/H4kA8S45vR3Xf/BgAA//+IILLfFg8AAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

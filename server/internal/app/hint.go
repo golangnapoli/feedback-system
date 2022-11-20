@@ -1,5 +1,14 @@
 package app
 
+type HintRepository interface {
+	// Find returns a list of hints.
+	Find() ([]Hint, error)
+	// FindByID returns a hint by its ID.
+	FindByID(id int) (Hint, error)
+	// Save saves a hint.
+	Save(h Hint) error
+}
+
 type Hint struct {
 	ID        int       `json:"id"`
 	Title     string    `json:"title"`

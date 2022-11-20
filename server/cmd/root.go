@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/golangnapoli/feedback-system/internal/cobrax"
+	"github.com/golangnapoli/feedback-system/internal/util/cobrax"
 )
 
 type rootConfig struct {
@@ -26,7 +26,7 @@ type RootCommand struct {
 	config *rootConfig
 }
 
-func NewRootCommand(versions map[string]string) *RootCommand {
+func NewRootCommand() *RootCommand {
 	cfg := &rootConfig{}
 	rootCmd := &RootCommand{
 		Command: &cobra.Command{
@@ -62,7 +62,7 @@ func NewRootCommand(versions map[string]string) *RootCommand {
 	rootCmd.PersistentFlags().BoolVarP(&rootCmd.config.Debug, "debug", "D", false, "Enables debug output")
 	rootCmd.PersistentFlags().BoolVarP(&rootCmd.config.DisableTty, "no-tty", "T", false, "Disable TTY")
 
-	// rootCmd.AddCommand(NewServeCommand())
+	rootCmd.AddCommand(NewServeCommand())
 
 	return rootCmd
 }

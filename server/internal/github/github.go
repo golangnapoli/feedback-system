@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"golang.org/x/oauth2"
 	"net/http"
 
 	"github.com/golangnapoli/feedback-system/internal/app"
@@ -10,6 +11,17 @@ import (
 
 type Github struct {
 	client *github.Client
+}
+
+func NewWithAuth(token string) *Github {
+	aCtx := context.Background()
+
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+	tc := oauth2.NewClient(aCtx, ts)
+
+	return New(tc)
 }
 
 func New(h *http.Client) *Github {

@@ -32,6 +32,11 @@
         "summary": "Get all hints",
         "description": "Get all hints",
         "operationId": "getAllHints",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "type",
@@ -70,6 +75,11 @@
         "tags": [
           "hint"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -102,6 +112,11 @@
         "tags": [
           "hint"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -109,7 +124,7 @@
             "description": "Hint id",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -132,6 +147,11 @@
         "operationId": "updateHintById",
         "tags": [
           "hint"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -167,10 +187,103 @@
           }
         }
       }
+    },
+    "/v1/login/auth/{provider}": {
+      "post": {
+        "summary": "Login with a provider",
+        "description": "Login with a provider",
+        "operationId": "loginWithProvider",
+        "tags": [
+          "login"
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "description": "Provider name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "github",
+                "google"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "Bearer token",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "avatar",
+          "token"
+        ]
+      },
       "HintWrite": {
         "type": "object",
         "properties": {

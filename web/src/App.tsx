@@ -1,16 +1,35 @@
-import React from 'react';
-import Titolo from './components/Titolo';
-import Content from './components/Content';
-import Navigation from './components/Navigation';
+import React, {createContext, Dispatch, useReducer} from "react";
+import {initialState, reducer, State} from "./store";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import GithubLogin from './components/GithubLogin';
+import Home from './components/Home';
 
-function App(): JSX.Element {
-	return (
-		<div className="flex lg:flex-row sm:flex-col flex-col h-screen bg-[url('https://picsum.photos/id/44/1920/1080')]">
-			<Titolo/>
-			<Content/>
-			<Navigation/>
-		</div>
-	);
+
+// @ts-ignore
+export const AuthContext = createContext<{
+  state: State;
+  dispatch: Dispatch<any>;
+}>({state: initialState, dispatch: () => null});
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        state,
+        dispatch
+      }}
+    >
+      <Router>
+        <Routes>
+          <Route path="/login" element={<GithubLogin/>}/>
+          <Route path="/" element={<Home/>}/>
+        </Routes>
+      </Router>
+    </AuthContext.Provider>
+  );
 }
 
 export default App;
+

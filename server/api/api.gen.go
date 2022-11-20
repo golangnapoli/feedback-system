@@ -19,6 +19,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	BearerAuthScopes = "bearerAuth.Scopes"
+)
+
 // Defines values for HintReadType.
 const (
 	HintReadTypeFeedback HintReadType = "feedback"
@@ -53,7 +57,7 @@ type HintRead struct {
 	Comments  []Comment    `json:"comments"`
 	CreatedAt time.Time    `json:"created_at"`
 	HintUrl   string       `json:"hint_url"`
-	Id        int64        `json:"id"`
+	Id        float32      `json:"id"`
 	Reactions float32      `json:"reactions"`
 	Title     string       `json:"title"`
 	Type      HintReadType `json:"type"`
@@ -72,6 +76,23 @@ type HintWrite struct {
 // HintWriteType defines model for HintWrite.Type.
 type HintWriteType string
 
+// LoginRequest defines model for LoginRequest.
+type LoginRequest struct {
+	Code string `json:"code"`
+}
+
+// LoginResponse defines model for LoginResponse.
+type LoginResponse struct {
+	User *User `json:"user,omitempty"`
+}
+
+// User defines model for User.
+type User struct {
+	Avatar string `json:"avatar"`
+	Name   string `json:"name"`
+	Token  string `json:"token"`
+}
+
 // GetAllHintsParams defines parameters for GetAllHints.
 type GetAllHintsParams struct {
 	// Filter hints by type
@@ -87,11 +108,20 @@ type CreateHintJSONBody HintWrite
 // UpdateHintByIdJSONBody defines parameters for UpdateHintById.
 type UpdateHintByIdJSONBody HintWrite
 
+// LoginWithProviderJSONBody defines parameters for LoginWithProvider.
+type LoginWithProviderJSONBody LoginRequest
+
+// LoginWithProviderParamsProvider defines parameters for LoginWithProvider.
+type LoginWithProviderParamsProvider string
+
 // CreateHintJSONRequestBody defines body for CreateHint for application/json ContentType.
 type CreateHintJSONRequestBody CreateHintJSONBody
 
 // UpdateHintByIdJSONRequestBody defines body for UpdateHintById for application/json ContentType.
 type UpdateHintByIdJSONRequestBody UpdateHintByIdJSONBody
+
+// LoginWithProviderJSONRequestBody defines body for LoginWithProvider for application/json ContentType.
+type LoginWithProviderJSONRequestBody LoginWithProviderJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -103,10 +133,13 @@ type ServerInterface interface {
 	CreateHint(ctx echo.Context) error
 	// Get a hint by id
 	// (GET /v1/hint/{id})
-	GetHintById(ctx echo.Context, id string) error
+	GetHintById(ctx echo.Context, id int) error
 	// Update a hint by id
 	// (PUT /v1/hint/{id})
 	UpdateHintById(ctx echo.Context, id string) error
+	// Login with a provider
+	// (POST /v1/login/auth/{provider})
+	LoginWithProvider(ctx echo.Context, provider LoginWithProviderParamsProvider) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -117,6 +150,8 @@ type ServerInterfaceWrapper struct {
 // GetAllHints converts echo context to params.
 func (w *ServerInterfaceWrapper) GetAllHints(ctx echo.Context) error {
 	var err error
+
+	ctx.Set(BearerAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetAllHintsParams
@@ -136,6 +171,8 @@ func (w *ServerInterfaceWrapper) GetAllHints(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreateHint(ctx echo.Context) error {
 	var err error
 
+	ctx.Set(BearerAuthScopes, []string{""})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreateHint(ctx)
 	return err
@@ -145,12 +182,14 @@ func (w *ServerInterfaceWrapper) CreateHint(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetHintById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetHintById(ctx, id)
@@ -168,8 +207,26 @@ func (w *ServerInterfaceWrapper) UpdateHintById(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{""})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateHintById(ctx, id)
+	return err
+}
+
+// LoginWithProvider converts echo context to params.
+func (w *ServerInterfaceWrapper) LoginWithProvider(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "provider" -------------
+	var provider LoginWithProviderParamsProvider
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "provider", runtime.ParamLocationPath, ctx.Param("provider"), &provider)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter provider: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.LoginWithProvider(ctx, provider)
 	return err
 }
 
@@ -205,26 +262,30 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/v1/hint", wrapper.CreateHint)
 	router.GET(baseURL+"/v1/hint/:id", wrapper.GetHintById)
 	router.PUT(baseURL+"/v1/hint/:id", wrapper.UpdateHintById)
+	router.POST(baseURL+"/v1/login/auth/:provider", wrapper.LoginWithProvider)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

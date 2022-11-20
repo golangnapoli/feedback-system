@@ -198,7 +198,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "number"
           },
           "title": {
             "type": "string"
@@ -223,14 +223,14 @@
           "comments": {
             "type": "array",
             "items": {
-                "$ref": "#/components/schemas/Comment"
+              "$ref": "#/components/schemas/Comment"
             }
           },
           "hint_url": {
             "type": "string"
           },
           "author": {
-              "$ref": "#/components/schemas/Author"
+            "$ref": "#/components/schemas/Author"
           }
         },
         "required": [

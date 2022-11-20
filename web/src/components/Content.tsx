@@ -1,5 +1,6 @@
 import React, { useState } from 'react';  
 import FeedbackRow from './FeedbackRow';
+import GithubLogin from './GithubLogin';
 
 function Content(): JSX.Element{
 
@@ -15,10 +16,7 @@ function Content(): JSX.Element{
                 </div>
 
                 <div className='flex flex-4 items-center justify-start mt-10 flex-col overflow-scroll'>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
+                    <GithubLogin/>
                     <FeedbackRow/>
                     <FeedbackRow/>
                     <FeedbackRow/>

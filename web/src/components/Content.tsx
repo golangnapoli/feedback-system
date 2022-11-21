@@ -1,5 +1,7 @@
 import React, { useState } from 'react';  
 import FeedbackRow from './FeedbackRow';
+import GithubLogin from './GithubLogin';
+import WriteComment from './WriteComment';
 
 function Content(): JSX.Element{
 
@@ -11,14 +13,11 @@ function Content(): JSX.Element{
             <div className='flex flex-col'>
 
                 <div className='flex-1 sm:flex-1 items-center justify-center w-full'>
-                    <img src="./assets/logo.svg" alt="" className='w-[300px] m-auto mt-10' />
+                    <img src="./assets/logo.svg" alt="" className='lg:w-[250px] w-[200px] m-auto mt-10' />
                 </div>
 
                 <div className='flex flex-4 items-center justify-start mt-10 flex-col overflow-scroll'>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
-                    <FeedbackRow/>
+                    <WriteComment/>
                     <FeedbackRow/>
                     <FeedbackRow/>
                     <FeedbackRow/>

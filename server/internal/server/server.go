@@ -63,17 +63,6 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	//indexFS, err := fs.Sub(fsys, "web-client/index.html")
-	//if err != nil {
-	//	return err
-	//}
-
-	//assetHandler := http.FileServer(http.FS(fsys))
-	//indexHandler := http.FileServer(http.FS(indexFS))
-
-	//s.client.GET("/static/*", echo.WrapHandler(assetHandler))
-	//s.client.GET("/favicon.ico", echo.WrapHandler(assetHandler))
-	//s.client.GET("/login", echo.WrapHandler(indexHandler))
 	s.client.Group("/*", middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:       ".",
 		Filesystem: http.FS(fsys),

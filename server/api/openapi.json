@@ -334,10 +334,7 @@
             "type": "number"
           },
           "comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Comment"
-            }
+            "type": "number"
           },
           "hint_url": {
             "type": "string"
@@ -355,21 +352,6 @@
           "reactions",
           "comments",
           "hint_url",
-          "author"
-        ]
-      },
-      "Comment": {
-        "type": "object",
-        "properties": {
-          "body": {
-            "type": "string"
-          },
-          "author": {
-            "$ref": "#/components/schemas/Author"
-          }
-        },
-        "required": [
-          "body",
           "author"
         ]
       },

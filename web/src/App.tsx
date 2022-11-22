@@ -4,8 +4,6 @@ import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import GithubLogin from './components/GithubLogin';
 import Home from './components/Home';
 
-
-// @ts-ignore
 export const AuthContext = createContext<{
   state: State;
   dispatch: Dispatch<any>;

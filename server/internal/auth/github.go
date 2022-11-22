@@ -70,6 +70,7 @@ func (g *GithubClient) GetGitHubOauthToken(code string) (*GitHubOauthToken, erro
 	values.Add("code", code)
 	values.Add("client_id", g.ClientID)
 	values.Add("client_secret", g.ClientSecret)
+	values.Add("scope", "public_repo")
 
 	query := values.Encode()
 

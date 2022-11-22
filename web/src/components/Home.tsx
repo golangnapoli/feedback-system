@@ -1,16 +1,12 @@
 import React from 'react';
-import Title from './Title';
 import Content from './Content';
-import Navigation from './Navigation';
+import Layout from "./Layout";
 
 function Home(): JSX.Element {
   return (
-    <div
-      className="flex lg:flex-row sm:flex-col flex-col h-screen bg-[url('https://i.imgur.com/64rUA4h.png')] bg-slate-800">
-      <Title/>
+    <Layout pageName="Feedbacks">
       <Content/>
-      <Navigation/>
-    </div>
+    </Layout>
   );
 }
 

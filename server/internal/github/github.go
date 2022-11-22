@@ -40,13 +40,23 @@ func (g *Github) Find() ([]app.Hint, error) {
 	}
 
 	hints := make([]app.Hint, len(result))
+
 	for i, r := range result {
+		var comments int
+
+		if r.Comments == nil {
+			comments = 0
+		} else {
+			comments = *r.Comments
+		}
+
 		hints[i] = app.Hint{
 			ID:        r.GetNumber(),
 			Title:     r.GetTitle(),
 			Body:      r.GetBody(),
 			Type:      r.Labels[0].GetName(),
 			CreatedAt: r.GetCreatedAt().String(),
+			Comments:  comments,
 			Author: app.Author{
 				Name:      r.GetUser().GetName(),
 				AvatarURL: r.GetUser().GetAvatarURL(),

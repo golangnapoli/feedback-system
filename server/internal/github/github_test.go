@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/golangnapoli/feedback-system/internal/app"
-	githubx "github.com/golangnapoli/feedback-system/internal/repository/github"
+	githubx "github.com/golangnapoli/feedback-system/internal/github"
 	"github.com/stretchr/testify/assert"
 
 	"golang.org/x/oauth2"

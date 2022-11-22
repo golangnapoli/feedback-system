@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 	"github.com/golangnapoli/feedback-system/internal/github"
+	"github.com/golangnapoli/feedback-system/static"
+	"io/fs"
 	"net/http"
 	"strings"
 
@@ -55,6 +57,28 @@ func (s *Server) Start() error {
 	}))
 
 	s.client.Use(ProcessTokenMiddleWare)
+
+	fsys, err := fs.Sub(static.WebClient, "web-client")
+	if err != nil {
+		return err
+	}
+
+	//indexFS, err := fs.Sub(fsys, "web-client/index.html")
+	//if err != nil {
+	//	return err
+	//}
+
+	//assetHandler := http.FileServer(http.FS(fsys))
+	//indexHandler := http.FileServer(http.FS(indexFS))
+
+	//s.client.GET("/static/*", echo.WrapHandler(assetHandler))
+	//s.client.GET("/favicon.ico", echo.WrapHandler(assetHandler))
+	//s.client.GET("/login", echo.WrapHandler(indexHandler))
+	s.client.Group("/*", middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:       ".",
+		Filesystem: http.FS(fsys),
+		HTML5:      true,
+	}))
 
 	return s.client.Start(fmt.Sprintf("%s:%d", s.config.Address, s.config.Port))
 }

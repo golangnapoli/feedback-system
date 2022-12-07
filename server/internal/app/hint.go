@@ -5,6 +5,8 @@ type HintRepository interface {
 	Find() ([]Hint, error)
 	// FindByID returns a hint by its ID.
 	FindByID(id int) (Hint, error)
+	// FindByType returns a list of hints by its type.
+	FindByType(t []string) ([]Hint, error)
 	// Save saves a hint.
 	Save(h Hint) error
 }
@@ -18,7 +20,6 @@ type Hint struct {
 	Reactions int    `json:"reactions"`
 	Comments  int    `json:"comments"`
 	Author    Author `json:"author"`
-	URL       string `json:"hint_url"`
 }
 
 type Author struct {

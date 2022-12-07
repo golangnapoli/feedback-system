@@ -336,9 +336,6 @@
           "comments": {
             "type": "number"
           },
-          "hint_url": {
-            "type": "string"
-          },
           "author": {
             "$ref": "#/components/schemas/Author"
           }

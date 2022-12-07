@@ -1,6 +1,13 @@
-bin/
+# dependencies
+vendor/
+
+# environment
 go.work
 go.work.sum
-vendor/
 .env
+.env.dev
+.env.prod
+
+# production
+bin/
 static/web-client/

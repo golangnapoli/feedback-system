@@ -2,10 +2,12 @@ package github
 
 import (
 	"context"
-	"golang.org/x/oauth2"
 	"net/http"
 
+	"golang.org/x/oauth2"
+
 	"github.com/golangnapoli/feedback-system/internal/app"
+	"github.com/golangnapoli/feedback-system/internal/util/slicex"
 	"github.com/google/go-github/v39/github"
 )
 
@@ -39,14 +41,27 @@ func (g *Github) Find() ([]app.Hint, error) {
 		return nil, err
 	}
 
-	hints := make([]app.Hint, len(result))
+	f := []string{"feedback", "proposal"}
 
-	for i, r := range result {
-		var comments int
+	// We use this custom filter function because the github library doesn't support filtering by diffent labels in a one call.
+	filtered := slicex.Filter(result, func(v *github.Issue) bool {
+		for _, label := range v.Labels {
+			for _, t := range f {
+				if label.GetName() == t {
+					return true
+				}
+			}
+		}
 
-		if r.Comments == nil {
-			comments = 0
-		} else {
+		return false
+	})
+
+	hints := make([]app.Hint, len(filtered))
+
+	for i, r := range filtered {
+		comments := 0
+
+		if r.Comments != nil {
 			comments = *r.Comments
 		}
 
@@ -58,10 +73,10 @@ func (g *Github) Find() ([]app.Hint, error) {
 			CreatedAt: r.GetCreatedAt().String(),
 			Comments:  comments,
 			Author: app.Author{
-				Name:      r.GetUser().GetName(),
-				AvatarURL: r.GetUser().GetAvatarURL(),
+				Name:       r.GetUser().GetName(),
+				AvatarURL:  r.GetUser().GetAvatarURL(),
+				ProfileURL: r.GetUser().GetHTMLURL(),
 			},
-			URL: r.GetHTMLURL(),
 		}
 	}
 
@@ -85,7 +100,6 @@ func (g *Github) FindByID(id int) (app.Hint, error) {
 			Name:      result.GetUser().GetName(),
 			AvatarURL: result.GetUser().GetAvatarURL(),
 		},
-		URL: result.GetHTMLURL(),
 	}
 
 	return hint, nil

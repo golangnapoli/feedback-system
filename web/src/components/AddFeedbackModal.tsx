@@ -59,7 +59,7 @@ export function AddFeedbackModal(props: AddFeedbackModalProps) {
         body: content,
         type: type,
         author: {
-          name: state.user?.name || "",
+          name: state.user.name,
         }
       }
 

@@ -11,7 +11,6 @@ export interface Hint {
   author: Author;
   comments: number;
   type: "feedback" | "proposal";
-  hint_url: string;
 }
 
 export type HintOut = Pick<Hint, "title" | "body" | "type" | "author">

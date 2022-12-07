@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/server/main.go",
             "args": ["serve","--address","localhost","--port","8080"],
-            "envFile": "${workspaceFolder}/server/.env",
+            "envFile": "${workspaceFolder}/server/.env.dev",
         }
     ]
 }

@@ -47,7 +47,7 @@ func TestFindByID(t *testing.T) {
 	tc := oauth2.NewClient(ctx, ts)
 	client := githubx.New(tc)
 
-	hint, err := client.FindByID(1)
+	hint, err := client.FindByID(3)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, hint)
@@ -71,7 +71,6 @@ func TestSave(t *testing.T) {
 		Body:   "Test",
 		Type:   "bug",
 		Author: app.Author{Name: "luigibarbato", AvatarURL: "https://avatars.githubusercontent.com/u/10111?v=4"},
-		URL:    "",
 	}
 
 	err := client.Save(hint)
